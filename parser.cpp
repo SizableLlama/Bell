@@ -6,8 +6,8 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <chrono>
-#include <map>
+//#include <chrono> TODO benchmark if i have enough time.
+//#include <map>
 #include <any>
 
 
@@ -49,7 +49,7 @@ class Scanner final{
 		void scanToken();
 		char peekNext();
 		void String();
-		bool word();
+		void word();
 
 };
 //	private:
@@ -94,14 +94,12 @@ void Scanner::scanToken(){
     case '"': String(); break;       // scans to closing quote, calls addToken(STRING) internally
     case ' ': case '\t': break;      // skip whitespace (only when not inside quotes)
     case '\n': line++; break;
+
     default:
-        if (isAlphaNumeric(c)) { //isOperatorChar(c)
+
 		word();
-            // shouldn't reach here if all operator chars are cased above
-        } else {
-            cerr<<"Unknown command.\n";               // consume until whitespace/operator, addToken(WORD) internally
-        }
-        break;
+		break;
+
 }
 }
 
@@ -151,17 +149,19 @@ char Scanner::peekNext(){
 	return source.at(current + 1);
 }
 
-bool Scanner::isAlpha(char c){
-	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
-}
 
-bool Scanner::isDigit(char c){
-	return c>= '0' && c<= '9';
-}
+//isAlpha , isDigit , and isAlphaNumeric are being commented out and will be reomoved if unneeded.
+//bool Scanner::isAlpha(char c){
+//	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+//}
 
-bool Scanner::isAlphaNumeric(char c){
-	return isAlpha(c) || isDigit(c);
-}
+//bool Scanner::isDigit(char c){
+//	return c>= '0' && c<= '9';
+//}
+
+//bool Scanner::isAlphaNumeric(char c){
+//	return isAlpha(c) || isDigit(c);
+//}
 
 bool Scanner::isAtEnd(){
 	return current >=source.length();
@@ -179,4 +179,22 @@ void Scanner::addToken(TokenType type){
 void Scanner::addToken(TokenType type, std::any literal){
 	std::string text = source.substr(start, current - start);
 	tokens.push_back(Token(type, text, literal, line));
+}
+
+void Scanner::word() {
+    // A shell word is any sequence of characters that IS NOT a space,
+    while (!isAtEnd() &&
+           peek() != ' ' &&
+           peek() != '\t' &&
+           peek() != '\n' &&
+           peek() != '|' &&
+           peek() != '<' &&
+           peek() != '>' &&
+           peek() != '&' &&
+           peek() != ';' &&
+           peek() != '"') {
+        advance();
+    }
+
+    addToken(WORD);
 }
