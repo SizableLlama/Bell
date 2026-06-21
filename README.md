@@ -1,5 +1,6 @@
 # Shell-
 A basic shell
+To add context, i have been creating this for an application for an apprenticeship.
 
 As the zero readers of my code may notice, I adapted the CPPlox Lexer for the shell.
 Next up is the parser.
