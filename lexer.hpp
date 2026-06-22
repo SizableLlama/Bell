@@ -11,7 +11,6 @@
 #include <any>
 
 
-using namespace std;
 
 
 //Here, we will have a string called command, we will break it up into multiple strings, using whitespace.
@@ -25,12 +24,12 @@ class Scanner final{
 		std::string source;
 		//I changed the below from array to vector.
 		//called arrayList[]
-		vector<Token> tokens;
+		std::vector<Token> tokens;
 		int start = 0;
 		int current = 0;
 		int line = 1;
 	public:
-		Scanner(string source){
+		Scanner(std::string source){
 			this->source = source;
 		}
 	public:
@@ -45,7 +44,7 @@ class Scanner final{
 		bool isAlphaNumeric(char c);
 		void addToken(TokenType type, std::any literal);
 		void addToken(TokenType type);
-		vector<Token> scanTokens();
+		std::vector<Token> scanTokens();
 		void scanToken();
 		char peekNext();
 		void String();
@@ -122,7 +121,7 @@ void Scanner::String(){
 	advance();
 
 	//Trim the surrounding quotes.
-	string value = source.substr(start + 1, current - start - 2);
+	std::string value = source.substr(start + 1, current - start - 2);
 	addToken(STRING, value);
 
 }
