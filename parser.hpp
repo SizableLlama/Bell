@@ -4,9 +4,10 @@
 #include "lexer.hpp"
 #include "structs.hpp"
 #include "shellToken.hpp"
-#include <cstdio>
+
 #include <vector>
 //no clue what i'm doing, just know i need structs and something else.
+#include <fstream>
 
 
 //TODO change all the else if s to a switch
@@ -69,17 +70,20 @@ class Parser final {
 
 
                 // The parser filters the Tokens into either Command, or Pipeline.
-                Pipeline parseExample() {
+                Pipeline parse() {
                         Pipeline pipeline;
                         Command currentCommand;
+
                         while (!isAtEnd()) {
 
-
                                 if (match(WORD) || match(STRING)) {
-                                        currentCommand.args.push_back(tokens[current].lexeme);
+                                        currentCommand.args.push_back(tokens[current - 1].lexeme);
+					continue;
                                 }
                                 else if(match(PIPE)) {
                                         pipeline.commands.push_back(currentCommand);
+					currentCommand = Command();
+					continue;
                                 }
                                 else if (match(RIGHT)) {
                                         currentCommand.redir_type = RedirType::OUTPUT;
@@ -87,40 +91,74 @@ class Parser final {
                                         //And so, I must append the next token, which should happend anyway, 
                                         if (match(WORD) || match(STRING)) {
                                                 //No idea if this is right. Also don't know what is the OS's job
-                                                currentCommand.redir_file = tokens[current].lexeme;
-                                                currentCommand.args.push_back(tokens[current].lexeme);
+						//match consumes a token and so i hope this is right.
+                                                currentCommand.redir_file = tokens[current - 1].lexeme;
+						continue;
                                         }
                                         else{
-                                                std::cerr<<"expected file name following '>'\n";
+                                                std::cerr<<"Expected file name following '>'\n";
                                         }
                                 }
                                 else if (match(LEFT)) {
                                         currentCommand.redir_type = RedirType::INPUT;
-
+					//command like : commmand < input_file
+					if (match(WORD) || match(STRING)) {
+						currentCommand.redir_file = tokens[current - 1].lexeme;
+						currentCommand.args.push_back(tokens[current - 1].lexeme);
+						continue;
+					}
+					else {
+						std::cerr<<"Expected file name following '<'\n";
+					}
                                 }
                                 else if (match(APPEND)) {
                                         currentCommand.redir_type = RedirType::APPEND;
+					//command like : command >> output_file
+					if (match(WORD) || match(STRING)) {
+						currentCommand.redir_file = tokens[current - 1].lexeme;
+						currentCommand.args.push_back(tokens[current - 1].lexeme);	
+						continue;
+					}
+					else{
+						std::cerr<<"Expected file name following '>>'\n";
+					}
                                 }
                                 else if (match(AMP)) {
-                                        currentCommand.background = true;
+                                        pipeline.background = true;
+					pipeline.commands.push_back(currentCommand);
+					currentCommand = Command();
+					continue;
                                 }
                                 else if (match(SEMICOLON)) {
                                         pipeline.commands.push_back(currentCommand);
+					currentCommand = Command();
+					continue;
                                 }
                                 else if (match(AND_AND)) {
                                         pipeline.commands.push_back(currentCommand);
+					currentCommand = Command();
+					continue;
                                 }
                                 else if (match(OR_OR)) {
                                         pipeline.commands.push_back(currentCommand);
+					currentCommand = Command();
+					continue;
                                 }
-                                else if (match(END_OF_FILE)) {
-                                        break;
-                                }
+                                //else {
+                                //        pipeline.commands.push_back(currentCommand);
+				//	currentCommand = Command();
+				//	break;
+                                //}
+				
+				
 
 
 
                                 advance();
                         }
+			if(!currentCommand.args.empty()) {
+				pipeline.commands.push_back(currentCommand);
+			}
 
                         return pipeline;
                 }
