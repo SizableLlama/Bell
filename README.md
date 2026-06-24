@@ -10,3 +10,4 @@ I know. I will probably fix that after the thing is built.
 Something else is the commented out code that i'm not using. i will remove that once i know it isn't needed.
 
 the shell sort of works now, it just needs a main file, and the executioner class needs a few small improvements.
+the shell now works for my personal use. However both the main file and executioner have a few tiny errors.
