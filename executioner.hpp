@@ -1,14 +1,18 @@
 #include "parser.hpp"
+#include "structs.hpp"
 #include <cstdlib>
+#include <iterator>
 #include <sstream>
 #include <vector>
 #include <iostream>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <fstream>
+#include <fcntl.h>
 //std::vector<std::string> into a std::vector<char*>
 
-void foo();
+
 // this should all be in a class executioner.
 
 class Executioner {
@@ -16,9 +20,9 @@ private:
 	std::vector<char*> commandToArgv(const Command& command) {
 		std::vector<char*> argv;
 		for (const std::string& arg : command.args) {
-			argv.push_back(const_cast<char*>(arg.c_str()));
+			argv.push_back( const_cast<char*>(arg.c_str()) );
 		}
-		argv.push_back(nullptr);  // required sentinel — execvp scans until it sees this
+		argv.push_back(nullptr);
 		return argv;
 	}
 
@@ -41,6 +45,29 @@ private:
 		return false;
 	}
 
+	void redirection(const Command& command) {
+		if (command.redir_type == RedirType::NONE){
+			return;
+		}
+		else if (command.redir_file.size() == 0) {
+			std::cerr<<"expected file name after redirect.\n";
+		}
+
+		else if (command.redir_type == RedirType::APPEND) { // >>
+			int file_desc = open(command.redir_file.c_str(), O_RDWR | O_CREAT | O_APPEND);
+
+			int copy_desc = dup(file_desc);
+		}
+		else if (command.redir_type == RedirType::INPUT) { // <
+			int file_desc = open(command.redir_file.c_str(), O_RDONLY);
+
+			int copy_desc = dup(file_desc);
+		}
+		else if (command.redir_type == RedirType::OUTPUT) { // >
+			int file_desc = open(command.redir_file.c_str(), O_CREAT | O_RDWR);
+		}
+	}
+
 
 
 
@@ -52,11 +79,19 @@ private:
 /*
  TODO: empty string, eg "hi  with no closing indicator results in a crash.
 
- TODO benchmark
- TODO figure out the wait function
+ TODO: benchmark
+
+ TODO: figure out the wait function
+
  TODO stop ctrl + c
+ 
  TODO make a nice main
- TODO add functionality to && || | > < >>
+ 
+ TODO: fix the double output
+
+ TODO add functionality to &&, ||, |, >, <, >>
+
+ TODO stop crashes. This is caused by the above tokens and insufficient commands following them.
 */
 
 public:
@@ -67,45 +102,36 @@ public:
 		
 		std::vector<char*> argv = commandToArgv(com);
 		if (builtIn(com)) return;
-		
-		int z = 0; //for debugging purposes.
-		size_t x = 0;
-		int pointed = 0;
-		pid_t returned;
+		redirection(com);
+
 		int status;
-		
-		while (x <= pipeline.commands.size()) {
-			status = fork();
-			//if (fork() == 0) {
-			if (status == 0) {
-				execvp(argv[0], argv.data());
-				//pid_t wait(int *pointed);
-				std::cout<<"Forked "<<z<<" times.\n";
-				z++;
-			}
-			else if (status == -1) {
-				//pid_t wait(int *pointed);
-				std::cerr<<"There was an error forking. For the "<<z<<"time \n"<<pointed<<"\n";
-				z++;
-			}
-			else {
-				waitpid(status, nullptr, 0);
-			}
-			x++;
+		status = fork();		
+
+		if (status == 0) {
+			execvp(argv[0], argv.data());			
 		}
+		else if (status == -1) {
+			std::cerr<<"There was an error forking.\n";
+		}
+		else {
+			waitpid(status, nullptr, 0);
+		}
+
 		
+
+
+
+
 
 		/*
 		ls -la | grep ".cpp" > output.txt
 		turns into:
 		ls -la   and   grep ".cpp"
-	
 		
 		need the && and || logic. if both left and right are true, run.
 		if left is false but right is true, run.
 		
 		but how? There must be two arguments. The OS probably checks for us, then I can do accordingly.
-
 		*/
 
 
@@ -120,4 +146,5 @@ public:
 };
 //So, i need to build arguments using the commands vector.
 //i then loop that to execvp.
+//open() is then used to open a file which is also in the commands vector.
 //open() is then used to open a file which is also in the commands vector.
