@@ -5,6 +5,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/wait.h>
 //std::vector<std::string> into a std::vector<char*>
 
 void foo();
@@ -48,14 +49,14 @@ private:
 
 
 
-
 /*
-TODO empty string, eg "hi  with no closing indicator results in a crash.
-TODO benchmark
-TODO figure out the wait function
-TODO stop ctrl + c
-TODO make a nice main
-TODO add functionality to && || | > < >>
+ TODO: empty string, eg "hi  with no closing indicator results in a crash.
+
+ TODO benchmark
+ TODO figure out the wait function
+ TODO stop ctrl + c
+ TODO make a nice main
+ TODO add functionality to && || | > < >>
 */
 
 public:
@@ -63,23 +64,32 @@ public:
 	void run(const Pipeline& pipeline) {
 		//TODO make this elif chain a switch. Also, check for built ins before commandToArgv.
 		const Command& com = pipeline.commands[0];
+		
 		std::vector<char*> argv = commandToArgv(com);
 		if (builtIn(com)) return;
-		int z = 0;
+		
+		int z = 0; //for debugging purposes.
 		size_t x = 0;
 		int pointed = 0;
+		pid_t returned;
+		int status;
+		
 		while (x <= pipeline.commands.size()) {
-
-			if (fork() == 0) {
+			status = fork();
+			//if (fork() == 0) {
+			if (status == 0) {
 				execvp(argv[0], argv.data());
-				pid_t wait(int *pointed);
+				//pid_t wait(int *pointed);
 				std::cout<<"Forked "<<z<<" times.\n";
 				z++;
 			}
-			else {
-				pid_t wait(int *pointed);
+			else if (status == -1) {
+				//pid_t wait(int *pointed);
 				std::cerr<<"There was an error forking. For the "<<z<<"time \n"<<pointed<<"\n";
 				z++;
+			}
+			else {
+				waitpid(status, nullptr, 0);
 			}
 			x++;
 		}
