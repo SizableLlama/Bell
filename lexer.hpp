@@ -1,29 +1,14 @@
 #pragma once
-
 #include "enums.hpp"
 #include "shellToken.hpp"
-
 #include <string>
 #include <iostream>
 #include <vector>
-//#include <chrono> TODO benchmark if i have enough time.
-//#include <map>
 #include <any>
-
-
-
-
-//Here, we will have a string called command, we will break it up into multiple strings, using whitespace.
-//If there is an unrecognised string, we will return an error.
-//Next, I will match the smaller strings into the enums.
-//I must also define the enums and their functions.
-
 
 class Scanner final{
 		private:
 		std::string source;
-		//I changed the below from array to vector.
-		//called arrayList[]
 		std::vector<Token> tokens;
 		int start = 0;
 		int current = 0;
@@ -51,24 +36,6 @@ class Scanner final{
 		void word();
 
 };
-//	private:
-//		map<string, TokenType> keywords={
-//
-//			{"echo", ECHO},
-//			{"cd", CD},
-//			{"which", WHICH},
-//			{"find", FIND},
-//			{"touch", TOUCH},
-//			{"grep", GREP},
-//			{"cat", CAT},
-//			{"ls", LS},
-//
-//		};
-//
-//
-//};
-
-
 
 std::vector<Token> Scanner::scanTokens(){
 	while(!isAtEnd()){
@@ -102,9 +69,6 @@ void Scanner::scanToken(){
 }
 }
 
-//Got rid of Scanner::identifier();
-
-//Got rid of Scanner::NUMBER();
 
 void Scanner::String(){
 	while (peek() !='"' && !isAtEnd()){
@@ -112,8 +76,7 @@ void Scanner::String(){
 		advance();
 	}
 
-	if (isAtEnd()){
-		//Replacing Lox.error()
+	if (isAtEnd()) {
 		std::cerr<<line<< "Unterminated string.";
 		return;
 	}
@@ -147,20 +110,6 @@ char Scanner::peekNext(){
 	if(current + 1 >= source.length()) return '\0';
 	return source.at(current + 1);
 }
-
-
-//isAlpha , isDigit , and isAlphaNumeric are being commented out and will be reomoved if unneeded.
-//bool Scanner::isAlpha(char c){
-//	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
-//}
-
-//bool Scanner::isDigit(char c){
-//	return c>= '0' && c<= '9';
-//}
-
-//bool Scanner::isAlphaNumeric(char c){
-//	return isAlpha(c) || isDigit(c);
-//}
 
 bool Scanner::isAtEnd(){
 	return current >=source.length();
