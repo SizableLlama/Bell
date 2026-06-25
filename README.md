@@ -23,3 +23,5 @@ I got an AI to help me get on the right tracks but it was way beyond my current 
 With realistically hours before development ends, I cannot possibly implement these features myself, and so I will not.
 I wanted to be entirely stransparent about my use of AI and so I am adding this paragraph.
 If anyone ever reads my code, the parser already breaks the code into different pipelines.
+
+Tomorrow i will make the shell a bit prettier, aswell as ignoring a SIGINT signal. Then it is done in its current form. Hoorah!
