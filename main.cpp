@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <tuple>
 #include <vector>
 #include <csignal>
 #include <signal.h>
@@ -13,6 +12,8 @@ int main() {
 	std::string input;
 	Executioner executor;
 
+	signal(SIGINT, SIG_IGN);
+	
 	while (true) {
 		std::cout<<'['<<std::filesystem::current_path()<<']'<< "Bell >";
 		if (!std::getline(std::cin, input)) {
