@@ -14,7 +14,7 @@ class Parser final {
                 int current = 0;
 
         public:
-                Parser(std::vector<Token> tokens) {
+                Parser(const std::vector<Token>& tokens) {
                         this->tokens = tokens;
                 }
 
