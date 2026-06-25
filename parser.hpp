@@ -116,7 +116,7 @@ class Parser final {
 					}
                                 }
                                 else if (match(AMP)) {
-                                        pipeline.background = true;
+                                        currentCommand.background = true;
 					pipeline.commands.push_back(currentCommand);
 					currentCommand = Command();
 					continue;
