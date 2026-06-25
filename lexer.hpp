@@ -14,7 +14,7 @@ class Scanner final{
 		int current = 0;
 		int line = 1;
 	public:
-		Scanner(std::string source){
+		Scanner(std::string& source){
 			this->source = source;
 		}
 	public:
