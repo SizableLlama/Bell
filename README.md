@@ -11,3 +11,14 @@ Something else is the commented out code that i'm not using. i will remove that 
 
 the shell sort of works now, it just needs a main file, and the executioner class needs a few small improvements.
 the shell now works for my personal use. However both the main file and executioner have a few tiny errors.
+
+
+
+
+
+
+
+I felt the need to put this asterisk at the bottom here. I tried to implement logical operators (||, |, &&) but failed repeatedly.
+I got an AI to help me get on the right tracks but it was way beyond my current level with memory management.
+With realistically hours before development ends, I cannot possibly implement these features myself, and so I will not, and shall get an AI to do so.
+I wanted to be entirely stransparent about my use of AI and so I am addig this paragraph.
